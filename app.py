@@ -1,55 +1,46 @@
 """
 MirAI Flask Backend - Connects the website to the ML models
+Run: python app.py
+Open: http://localhost:5000
 """
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import sys
 
-# Add the src directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'MirAI_Backend', 'src'))
+# Add backend to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
 app = Flask(__name__, static_folder='.')
 CORS(app)
 
-# Try to load the real model, fall back to mock if not available
+# Try to load the real model
 try:
     from mirai_inference import MirAI_System
-    mirai = MirAI_System(artifacts_dir='MirAI_Backend/models')
+    mirai = MirAI_System(artifacts_dir='backend/models')
     USE_REAL_MODEL = True
-    print("✅ MirAI models loaded successfully!")
+    print("✅ MirAI ML models loaded successfully!")
 except Exception as e:
     USE_REAL_MODEL = False
     print(f"⚠️ Could not load models: {e}")
-    print("Using mock predictions instead.")
+    print("   Using mock predictions. Run model.ipynb to generate models.")
 
 
 def mock_prediction(data):
     """Fallback mock prediction when models aren't available"""
-    score = 15  # Base
-    
-    # Age
+    score = 15
     age = int(data.get('AGE', 65))
     if age > 75: score += 20
     elif age > 65: score += 10
-    
-    # FAQ
     faq = float(data.get('FAQ', 0))
     score += faq * 1.5
-    
-    # Memory
     ecog = float(data.get('EcogPtMem', 1))
     score += (ecog - 1) * 10
-    
-    # APOE4
     apoe4 = int(data.get('APOE4', 0))
     score += apoe4 * 12
-    
-    # pTau
     ptau = float(data.get('PTAU', 0))
     if ptau > 0.6: score += 20
     elif ptau > 0.3: score += 10
-    
     score = min(round(score), 100)
     
     return {
@@ -80,11 +71,9 @@ def serve_static(path):
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
-    """Main prediction endpoint"""
     try:
         data = request.json
         
-        # Map frontend field names to model field names
         patient_data = {
             'AGE': float(data.get('age', 65)),
             'PTGENDER': data.get('gender', 'Male'),
@@ -111,25 +100,20 @@ def predict():
         })
         
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 def parse_apoe4(genotype):
-    """Convert genotype string to APOE4 count"""
     if not genotype:
         return 0
-    count = genotype.count('4')
-    return count
+    return genotype.count('4')
 
 
 if __name__ == '__main__':
     print("\n" + "="*50)
     print("🧠 MirAI Alzheimer's Screening Server")
     print("="*50)
-    print(f"Model Status: {'✅ Real Models' if USE_REAL_MODEL else '⚠️ Mock Mode'}")
-    print("Open: http://localhost:5000")
+    print(f"Model: {'✅ Real ML Models' if USE_REAL_MODEL else '⚠️ Mock Mode'}")
+    print("URL: http://localhost:5000")
     print("="*50 + "\n")
     app.run(debug=True, port=5000)
