@@ -476,8 +476,8 @@
             }
         }
 
-        // Generate Report
-        function generateReport() {
+        // Generate Report - Calls Flask API
+        async function generateReport() {
             // Show loading overlay
             document.getElementById('loadingOverlay').classList.add('active');
 
@@ -496,13 +496,35 @@
                 nfl: document.getElementById('nfl').value
             };
 
-            // Store in localStorage for results page
-            localStorage.setItem('miraiAssessment', JSON.stringify(data));
+            try {
+                // Try to call the Flask API
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-            // Simulate processing delay then redirect
+                if (response.ok) {
+                    const result = await response.json();
+                    localStorage.setItem('miraiAssessment', JSON.stringify(data));
+                    localStorage.setItem('miraiPrediction', JSON.stringify(result.prediction));
+                    localStorage.setItem('miraiModelType', result.model_type);
+                } else {
+                    // API failed, store data for client-side fallback
+                    localStorage.setItem('miraiAssessment', JSON.stringify(data));
+                    localStorage.removeItem('miraiPrediction');
+                }
+            } catch (e) {
+                // No API available (static hosting), use client-side fallback
+                console.log('API not available, using client-side calculation');
+                localStorage.setItem('miraiAssessment', JSON.stringify(data));
+                localStorage.removeItem('miraiPrediction');
+            }
+
+            // Redirect to results
             setTimeout(() => {
                 window.location.href = 'results.html';
-            }, 2500);
+            }, 1500);
         }
     </script>
 

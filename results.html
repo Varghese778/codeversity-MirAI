@@ -415,42 +415,59 @@
         // Initialize AOS
         AOS.init();
 
-        // Retrieve assessment data
+        // Retrieve assessment data and API prediction (if available)
         const data = JSON.parse(localStorage.getItem('miraiAssessment')) || {};
+        const apiPrediction = JSON.parse(localStorage.getItem('miraiPrediction') || 'null');
+        const modelType = localStorage.getItem('miraiModelType') || 'mock';
 
-        // Simulate risk calculation (in real app, this would call the backend)
+        // Show model badge
+        if (modelType === 'real') {
+            console.log('✅ Using REAL ML model prediction');
+        } else {
+            console.log('⚠️ Using client-side mock calculation');
+        }
+
+        // Calculate risk - use API result if available
+        function getRiskScore() {
+            if (apiPrediction && apiPrediction.final_risk_score !== undefined) {
+                return Math.round(apiPrediction.final_risk_score * 100);
+            }
+            return calculateMockRisk(data);
+        }
+
+        // Fallback mock calculation
         function calculateMockRisk(data) {
-            // Simple heuristic for demo purposes
-            let score = 15; // Base low risk
-
-            // Age factor
+            let score = 15;
             const age = parseInt(data.age) || 65;
             if (age > 75) score += 20;
             else if (age > 65) score += 10;
-
-            // FAQ factor (0-30)
             const faq = parseInt(data.faq) || 0;
             score += faq * 1.5;
-
-            // Memory self-rating (1-4)
             const ecog = parseFloat(data.ecogMem) || 1;
             score += (ecog - 1) * 10;
-
-            // Genotype factor
             const genotype = data.genotype || '';
             if (genotype === '4/4') score += 25;
             else if (genotype === '3/4' || genotype === '2/4') score += 15;
-
-            // Biomarker factors
             const ptau = parseFloat(data.ptau217) || 0;
             if (ptau > 0.6) score += 20;
             else if (ptau > 0.3) score += 10;
-
-            // Cap at 100
             return Math.min(Math.round(score), 100);
         }
 
-        function getStageRisk(score, stage) {
+        function getStageRisk(stage) {
+            if (apiPrediction) {
+                const risks = {
+                    1: apiPrediction.stage1_risk || 'Low',
+                    2: apiPrediction.stage2_risk || 'Low',
+                    3: apiPrediction.stage3_risk || 'Low'
+                };
+                const status = risks[stage];
+                const cls = status.toLowerCase().includes('high') ? 'status-high' :
+                    status.toLowerCase().includes('elevated') ? 'status-elevated' : 'status-low';
+                return { status, class: cls };
+            }
+            // Fallback to mock
+            const score = getRiskScore();
             if (stage === 1) {
                 if (score < 30) return { status: 'Low Risk', class: 'status-low' };
                 if (score < 60) return { status: 'Elevated', class: 'status-elevated' };
@@ -477,7 +494,7 @@
         }
 
         // Calculate and display results
-        const riskScore = calculateMockRisk(data);
+        const riskScore = getRiskScore();
         const riskCategory = getRiskCategory(riskScore);
 
         // Animate gauge
@@ -494,9 +511,9 @@
 
         // Stage results
         setTimeout(() => {
-            const s1 = getStageRisk(riskScore, 1);
-            const s2 = getStageRisk(riskScore, 2);
-            const s3 = getStageRisk(riskScore, 3);
+            const s1 = getStageRisk(1);
+            const s2 = getStageRisk(2);
+            const s3 = getStageRisk(3);
 
             document.getElementById('stage1Status').textContent = s1.status;
             document.getElementById('stage1Status').className = `pipeline-status ${s1.class}`;
