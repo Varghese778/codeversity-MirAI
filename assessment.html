@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>MirAI - Risk Assessment</title>
+    <meta name="description" content="Complete your MirAI Alzheimer's risk assessment in under 5 minutes.">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f9f7 100%);
+            min-height: 100vh;
+        }
+
+        .mirai-logo {
+            font-weight: 800;
+            font-size: 28px;
+            background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .assessment-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .assessment-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: #5E4BFF;
+            width: 40px;
+            border-radius: 6px;
+        }
+
+        .step-dot.completed {
+            background: #00C9A7;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #5E4BFF;
+            box-shadow: 0 0 0 4px rgba(94, 75, 255, 0.1);
+        }
+
+        .btn-mirai {
+            background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-mirai:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(94, 75, 255, 0.3);
+            color: white;
+        }
+
+        .btn-outline-mirai {
+            background: transparent;
+            border: 2px solid #5E4BFF;
+            color: #5E4BFF;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .btn-outline-mirai:hover {
+            background: #5E4BFF;
+            color: white;
+        }
+
+        .stage-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stage-badge.clinical {
+            background: rgba(94, 75, 255, 0.1);
+            color: #5E4BFF;
+        }
+
+        .stage-badge.genetic {
+            background: rgba(255, 149, 0, 0.1);
+            color: #FF9500;
+        }
+
+        .stage-badge.biomarker {
+            background: rgba(0, 201, 167, 0.1);
+            color: #00C9A7;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-tooltip {
+            color: #5E4BFF;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #00C9A7, #FF9500, #FF6B6B);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #5E4BFF;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #5E4BFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner mb-4"></div>
+        <h4 style="color: #1E293B;">Analyzing Risk Profile...</h4>
+        <p class="text-muted">Running 3-stage cascade model</p>
+    </div>
+
+    <div class="assessment-container">
+
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <a href="index.html" class="mirai-logo text-decoration-none">MirAI</a>
+            <p class="text-muted mt-2">Alzheimer's Risk Assessment</p>
+        </div>
+
+        <div class="assessment-card" data-aos="fade-up">
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+
+            <form id="assessmentForm">
+
+                <!-- Step 1: Clinical -->
+                <div class="form-step active" id="step1">
+                    <span class="stage-badge clinical"><i class="bi bi-clipboard-pulse me-2"></i>Stage 1: Clinical
+                        Screening</span>
+
+                    <div class="mb-4">
+                        <label class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" placeholder="e.g., 65" min="40" max="100"
+                            required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="gender" required>
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Years of Education</label>
+                        <input type="number" class="form-control" id="education" placeholder="e.g., 16" min="0" max="30"
+                            required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">
+                            FAQ Score (Functional Activities)
+                            <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip"
+                                title="0 = No difficulty, 30 = Severe difficulty with daily tasks"></i>
+                        </label>
+                        <input type="range" class="form-range" id="faq" min="0" max="30" value="0">
+                        <div class="range-labels">
+                            <span>0 (Independent)</span>
+                            <span id="faqValue">0</span>
+                            <span>30 (Dependent)</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">
+                            Memory Self-Rating (EcogPtMem)
+                            <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip"
+                                title="How do you rate your memory compared to 10 years ago?"></i>
+                        </label>
+                        <input type="range" class="form-range" id="ecogMem" min="1" max="4" step="0.5" value="1">
+                        <div class="range-labels">
+                            <span>1 (Same)</span>
+                            <span id="ecogMemValue">1.0</span>
+                            <span>4 (Much Worse)</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Overall Everyday Cognition (EcogPtTotal)</label>
+                        <input type="range" class="form-range" id="ecogTotal" min="1" max="4" step="0.5" value="1">
+                        <div class="range-labels">
+                            <span>1 (Normal)</span>
+                            <span id="ecogTotalValue">1.0</span>
+                            <span>4 (Impaired)</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-mirai mt-3" onclick="nextStep(2)">
+                        Continue to Genetic Data <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+
+                <!-- Step 2: Genetic -->
+                <div class="form-step" id="step2">
+                    <span class="stage-badge genetic"><i class="bi bi-dna me-2"></i>Stage 2: Genetic
+                        Stratification</span>
+
+                    <p class="text-muted mb-4">If you have genetic test results available, enter them below. Otherwise,
+                        you may skip this section.</p>
+
+                    <div class="mb-4">
+                        <label class="form-label">APOE Genotype</label>
+                        <select class="form-select" id="genotype">
+                            <option value="">Unknown / Not Tested</option>
+                            <option value="2/2">ε2/ε2 (Protective)</option>
+                            <option value="2/3">ε2/ε3</option>
+                            <option value="3/3">ε3/ε3 (Neutral)</option>
+                            <option value="2/4">ε2/ε4</option>
+                            <option value="3/4">ε3/ε4 (One Risk Allele)</option>
+                            <option value="4/4">ε4/ε4 (Two Risk Alleles)</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="button" class="btn btn-outline-mirai" onclick="prevStep(1)">
+                            <i class="bi bi-arrow-left me-2"></i>Back
+                        </button>
+                        <button type="button" class="btn btn-mirai flex-grow-1" onclick="nextStep(3)">
+                            Continue to Biomarkers <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Biomarker -->
+                <div class="form-step" id="step3">
+                    <span class="stage-badge biomarker"><i class="bi bi-droplet-half me-2"></i>Stage 3: Biomarker
+                        Analysis</span>
+
+                    <p class="text-muted mb-4">If you have plasma biomarker results from a blood test, enter them below.
+                        Otherwise, the model will estimate based on clinical and genetic data.</p>
+
+                    <div class="mb-4">
+                        <label class="form-label">pTau-217 (pg/mL)</label>
+                        <input type="number" step="0.01" class="form-control" id="ptau217" placeholder="e.g., 0.5">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Aβ42 (pg/mL)</label>
+                        <input type="number" step="0.1" class="form-control" id="ab42" placeholder="e.g., 15.2">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Aβ40 (pg/mL)</label>
+                        <input type="number" step="0.1" class="form-control" id="ab40" placeholder="e.g., 180.5">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">NfL (pg/mL)</label>
+                        <input type="number" step="0.1" class="form-control" id="nfl" placeholder="e.g., 22.0">
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="button" class="btn btn-outline-mirai" onclick="prevStep(2)">
+                            <i class="bi bi-arrow-left me-2"></i>Back
+                        </button>
+                        <button type="button" class="btn btn-mirai flex-grow-1" onclick="generateReport()">
+                            <i class="bi bi-cpu me-2"></i>Generate Risk Report
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted"><i class="bi bi-shield-check me-1"></i> Your data is processed locally and never
+                stored.</small>
+        </div>
+
+    </div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init();
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Range slider value display
+        document.getElementById('faq').addEventListener('input', function () {
+            document.getElementById('faqValue').textContent = this.value;
+        });
+        document.getElementById('ecogMem').addEventListener('input', function () {
+            document.getElementById('ecogMemValue').textContent = parseFloat(this.value).toFixed(1);
+        });
+        document.getElementById('ecogTotal').addEventListener('input', function () {
+            document.getElementById('ecogTotalValue').textContent = parseFloat(this.value).toFixed(1);
+        });
+
+        // Step navigation
+        function nextStep(step) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateDots(step);
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateDots(step);
+        }
+
+        function updateDots(currentStep) {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('dot' + i);
+                dot.classList.remove('active', 'completed');
+                if (i < currentStep) {
+                    dot.classList.add('completed');
+                } else if (i === currentStep) {
+                    dot.classList.add('active');
+                }
+            }
+        }
+
+        // Generate Report
+        function generateReport() {
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            // Collect form data
+            const data = {
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                education: document.getElementById('education').value,
+                faq: document.getElementById('faq').value,
+                ecogMem: document.getElementById('ecogMem').value,
+                ecogTotal: document.getElementById('ecogTotal').value,
+                genotype: document.getElementById('genotype').value,
+                ptau217: document.getElementById('ptau217').value,
+                ab42: document.getElementById('ab42').value,
+                ab40: document.getElementById('ab40').value,
+                nfl: document.getElementById('nfl').value
+            };
+
+            // Store in localStorage for results page
+            localStorage.setItem('miraiAssessment', JSON.stringify(data));
+
+            // Simulate processing delay then redirect
+            setTimeout(() => {
+                window.location.href = 'results.html';
+            }, 2500);
+        }
+    </script>
+
+</body>
+
+</html>

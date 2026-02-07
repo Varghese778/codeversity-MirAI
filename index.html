@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>MirAI - Early Alzheimer's Detection System</title>
+  <meta name="description"
+    content="MirAI is an AI-powered early-screening framework for Alzheimer's Disease using a 3-tier clinical, genetic, and biomarker escalation pathway.">
+  <meta name="keywords"
+    content="Alzheimer's, Early Detection, AI, Machine Learning, Healthcare, pTau-217, APOE4, Screening">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- MirAI Custom Styles -->
+  <style>
+    .mirai-logo {
+      font-weight: 800;
+      font-size: 32px;
+      background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .mirai-logo .jp {
+      font-size: 14px;
+      opacity: 0.7;
+      display: block;
+      line-height: 1;
+      -webkit-text-fill-color: #5E4BFF;
+    }
+
+    .hero .welcome h2 {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .stage-badge.clinical {
+      background: rgba(94, 75, 255, 0.1);
+      color: #5E4BFF;
+    }
+
+    .stage-badge.genetic {
+      background: rgba(255, 149, 0, 0.1);
+      color: #FF9500;
+    }
+
+    .stage-badge.biomarker {
+      background: rgba(0, 201, 167, 0.1);
+      color: #00C9A7;
+    }
+
+    .risk-card {
+      border-radius: 24px;
+      padding: 32px;
+      background: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .risk-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .cta-gradient {
+      background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+      border: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .cta-gradient:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(94, 75, 255, 0.3);
+      color: white;
+    }
+
+    .pipeline-step {
+      position: relative;
+      padding-left: 60px;
+    }
+
+    .pipeline-step::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 50px;
+      height: calc(100% - 30px);
+      width: 2px;
+      background: linear-gradient(to bottom, #5E4BFF, #00C9A7);
+    }
+
+    .pipeline-step:last-child::before {
+      display: none;
+    }
+
+    .pipeline-step .step-number {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+    }
+
+    .step-1 .step-number {
+      background: #5E4BFF;
+    }
+
+    .step-2 .step-number {
+      background: #FF9500;
+    }
+
+    .step-3 .step-number {
+      background: #00C9A7;
+    }
+  </style>
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header sticky-top">
+
+    <div class="topbar d-flex align-items-center">
+      <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="contact-info d-flex align-items-center">
+          <i class="bi bi-telephone d-flex align-items-center"><span>+91 9531975283</span></i>
+          <i class="bi bi-people d-flex align-items-center ms-4"><span>Team Break&Build</span></i>
+        </div>
+        <div class="social-links d-none d-md-flex align-items-center">
+          <a href="https://github.com/Varghese778/codeversity-MirAI" class="github"><i class="bi bi-github"></i></a>
+          <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div><!-- End Top Bar -->
+
+    <div class="branding d-flex align-items-center">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center me-auto">
+          <div class="mirai-logo">MirAI<span class="jp">未来</span></div>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="#hero" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#pipeline">How It Works</a></li>
+            <li><a href="#science">The Science</a></li>
+            <li><a href="#research">Research</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+        <a class="cta-btn d-none d-sm-block" href="assessment.html">Start Screening</a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section light-background">
+
+      <img src="assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+
+      <div class="container position-relative">
+
+        <div class="welcome position-relative" data-aos="fade-down" data-aos-delay="100">
+          <h2>THE FUTURE OF ALZHEIMER'S<br>EARLY DETECTION</h2>
+          <p>AI-powered 3-tier screening that catches risk before symptoms appear.</p>
+        </div><!-- End Welcome -->
+
+        <div class="content row gy-4">
+          <div class="col-lg-4 d-flex align-items-stretch">
+            <div class="why-box" data-aos="zoom-out" data-aos-delay="200">
+              <h3>Why MirAI?</h3>
+              <p>
+                Traditional Alzheimer's diagnosis relies on expensive MRI, PET, or invasive CSF tests—only accessible
+                after cognitive decline begins.
+                <br><br>
+                <strong>MirAI changes this.</strong> We use accessible clinical, genetic, and blood-based biomarkers to
+                detect risk <em>before</em> symptoms appear.
+              </p>
+              <div class="text-center">
+                <a href="#pipeline" class="more-btn"><span>See How It Works</span> <i
+                    class="bi bi-chevron-right"></i></a>
+              </div>
+            </div>
+          </div><!-- End Why Box -->
+
+          <div class="col-lg-8 d-flex align-items-stretch">
+            <div class="d-flex flex-column justify-content-center">
+              <div class="row gy-4">
+
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box" data-aos="zoom-out" data-aos-delay="300">
+                    <i class="bi bi-clipboard-pulse"></i>
+                    <h4>Stage 1: Clinical</h4>
+                    <p>Non-invasive screening using memory questionnaires and functional assessments.</p>
+                  </div>
+                </div><!-- End Icon Box -->
+
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box" data-aos="zoom-out" data-aos-delay="400">
+                    <i class="bi bi-diagram-3"></i>
+                    <h4>Stage 2: Genetic</h4>
+                    <p>Risk stratification using APOE ε4 and polygenic markers.</p>
+                  </div>
+                </div><!-- End Icon Box -->
+
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box" data-aos="zoom-out" data-aos-delay="500">
+                    <i class="bi bi-droplet-half"></i>
+                    <h4>Stage 3: Biomarker</h4>
+                    <p>Blood-based pTau-217, Aβ42, and NfL analysis.</p>
+                  </div>
+                </div><!-- End Icon Box -->
+
+              </div>
+            </div>
+          </div>
+        </div><!-- End  Content-->
+
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+      <div class="container">
+
+        <div class="row gy-4 gx-5">
+
+          <div class="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="200">
+            <img src="assets/img/about.jpg" class="img-fluid" alt="Alzheimer's Research">
+          </div>
+
+          <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="100">
+            <h3>The Problem We're Solving</h3>
+            <p>
+              <strong>55 million people</strong> worldwide live with dementia. By 2050, this will triple. Yet diagnosis
+              typically occurs only after significant cognitive decline—when treatment options are limited.
+            </p>
+            <ul>
+              <li>
+                <i class="fa-solid fa-brain"></i>
+                <div>
+                  <h5>Delayed Detection</h5>
+                  <p>Traditional diagnostics (MRI, PET, CSF) are expensive, invasive, and only used after symptoms
+                    appear.</p>
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-chart-line"></i>
+                <div>
+                  <h5>Scalable Solution</h5>
+                  <p>MirAI uses accessible inputs—questionnaires, genetic tests, and simple blood draws—enabling
+                    population-level screening.</p>
+                </div>
+              </li>
+              <li>
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>
+                  <h5>Clinically Sound</h5>
+                  <p>Our 3-tier escalation prevents over-testing while ensuring high-risk individuals receive proper
+                    follow-up.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+            <i class="fa-solid fa-users"></i>
+            <div class="stats-item">
+              <span data-purecounter-start="0" data-purecounter-end="55" data-purecounter-duration="1"
+                class="purecounter"></span>
+              <p>Million Patients Worldwide</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+            <i class="fa-solid fa-layer-group"></i>
+            <div class="stats-item">
+              <span data-purecounter-start="0" data-purecounter-end="3" data-purecounter-duration="1"
+                class="purecounter"></span>
+              <p>Stage Escalation Pipeline</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+            <i class="fas fa-chart-pie"></i>
+            <div class="stats-item">
+              <span data-purecounter-start="0" data-purecounter-end="93" data-purecounter-duration="1"
+                class="purecounter"></span>
+              <p>% Stage 3 AUC Accuracy</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+            <i class="fas fa-database"></i>
+            <div class="stats-item">
+              <span data-purecounter-start="0" data-purecounter-end="2419" data-purecounter-duration="1"
+                class="purecounter"></span>
+              <p>ADNI Patients Analyzed</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Stats Section -->
+
+    <!-- Pipeline Section (How It Works) -->
+    <section id="pipeline" class="services section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>How It Works</h2>
+        <p>MirAI's 3-Tier Escalation Pathway ensures accurate risk assessment with minimal unnecessary testing.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-5">
+
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="pipeline-step step-1 mb-5">
+              <div class="step-number">1</div>
+              <div class="risk-card">
+                <span class="stage-badge clinical mb-3"><i class="bi bi-clipboard-pulse me-2"></i>Clinical
+                  Screening</span>
+                <h4 class="mt-2 mb-3">Initial Assessment</h4>
+                <p>Non-invasive, low-cost indicators including:</p>
+                <ul>
+                  <li>Subjective memory complaints</li>
+                  <li>Functional activities (FAQ score)</li>
+                  <li>Age and family history</li>
+                  <li>Everyday cognition (ECog)</li>
+                </ul>
+                <p class="text-muted mt-3"><small><em>This stage deliberately avoids diagnostic scales (MMSE, CDR) to
+                      prevent label leakage and ensure valid early detection.</em></small></p>
+              </div>
+            </div>
+
+            <div class="pipeline-step step-2 mb-5">
+              <div class="step-number">2</div>
+              <div class="risk-card">
+                <span class="stage-badge genetic mb-3"><i class="bi bi-dna me-2"></i>Genetic Stratification</span>
+                <h4 class="mt-2 mb-3">Risk Refinement</h4>
+                <p>Individuals flagged in Stage 1 undergo genetic risk scoring:</p>
+                <ul>
+                  <li><strong>APOE ε4</strong> - Strongest genetic risk factor</li>
+                  <li>Polygenic risk markers</li>
+                </ul>
+                <p class="text-muted mt-3"><small><em>APOE ε4 association with late-onset AD was established by Allen D.
+                      Roses.</em></small></p>
+              </div>
+            </div>
+
+            <div class="pipeline-step step-3">
+              <div class="step-number">3</div>
+              <div class="risk-card">
+                <span class="stage-badge biomarker mb-3"><i class="bi bi-droplet-half me-2"></i>Biomarker
+                  Analysis</span>
+                <h4 class="mt-2 mb-3">Biochemical Confirmation</h4>
+                <p>High-risk individuals are assessed through plasma biomarkers:</p>
+                <ul>
+                  <li><strong>pTau-217</strong> - Most accurate plasma marker</li>
+                  <li>pTau217/Aβ42 ratio</li>
+                  <li>Neurofilament Light (NfL)</li>
+                </ul>
+                <p class="text-muted mt-3"><small><em>Clinical validity of plasma pTau217 established by Oskar Hansson's
+                      research.</em></small></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="risk-card w-100 text-center p-5">
+              <h3 class="mb-4">Ready to Assess Your Risk?</h3>
+              <p class="mb-4">Our AI-powered screening takes just 5 minutes and provides instant, transparent results
+                with explainability.</p>
+              <a href="assessment.html" class="cta-gradient">
+                <i class="bi bi-arrow-right-circle me-2"></i>Start Screening
+              </a>
+              <div class="mt-4 text-muted">
+                <small><i class="bi bi-shield-check me-1"></i> Your data is processed locally and never stored.</small>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /Pipeline Section -->
+
+    <!-- Science Section (Departments) -->
+    <section id="science" class="departments section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>The Science</h2>
+        <p>Explore the technical details behind each stage of MirAI's screening pipeline.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row">
+          <div class="col-lg-3">
+            <ul class="nav nav-tabs flex-column">
+              <li class="nav-item">
+                <a class="nav-link active show" data-bs-toggle="tab" href="#science-tab-1">Stage 1: Clinical</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#science-tab-2">Stage 2: Genetic</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#science-tab-3">Stage 3: Biomarker</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#science-tab-4">Decision Engine</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-9 mt-4 mt-lg-0">
+            <div class="tab-content">
+              <div class="tab-pane active show" id="science-tab-1">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Clinical Screening Model</h3>
+                    <p class="fst-italic">XGBoost classifier trained on ADNI data</p>
+                    <p><strong>Features:</strong> AGE, PTGENDER, PTEDUCAT, FAQ, EcogPtMem, EcogPtTotal</p>
+                    <p><strong>Pipeline:</strong> KNN Imputer → Standard Scaler → XGBoost</p>
+                    <p><strong>Performance:</strong> AUC 0.87 on held-out test set</p>
+                    <p class="mt-3">Uses cross-validation predictions (not direct training predictions) to prevent
+                      stacking leakage when passing probabilities to Stage 2.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <i class="bi bi-clipboard-data" style="font-size: 120px; color: #5E4BFF;"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="science-tab-2">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Genetic Risk Stratification</h3>
+                    <p class="fst-italic">Risk refinement using genetic susceptibility</p>
+                    <p><strong>Features:</strong> Stage1_Prob, APOE4_Count</p>
+                    <p><strong>Key Insight:</strong> APOE ε4 acts as a "Risk Modifier" rather than a sole determinant—it
+                      refines the clinical signal.</p>
+                    <p><strong>Performance:</strong> AUC 0.88 (marginal improvement over Stage 1 alone)</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <i class="bi bi-diagram-3" style="font-size: 120px; color: #FF9500;"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="science-tab-3">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Biomarker Confirmation</h3>
+                    <p class="fst-italic">Blood-based pathology detection</p>
+                    <p><strong>Features:</strong> Stage2_Prob, pT217_F, AB42_F, AB40_F, NfL_Q</p>
+                    <p><strong>Key Finding:</strong> pTau-217 is the dominant biomarker—considered the most specific
+                      plasma marker for AD pathology.</p>
+                    <p><strong>Performance:</strong> AUC 0.93 (significant improvement over previous stages)</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <i class="bi bi-droplet" style="font-size: 120px; color: #00C9A7;"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="science-tab-4">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Integrated Decision Engine</h3>
+                    <p class="fst-italic">Cascade fusion with explainability</p>
+                    <p><strong>Architecture:</strong> Each stage passes calibrated probabilities to the next, ensuring
+                      uncertainty propagation.</p>
+                    <p><strong>Leakage Prevention:</strong> Patient-level separation using GroupShuffleSplit on RID
+                      ensures no patient appears in both train and test.</p>
+                    <p><strong>Output:</strong> Final 0-100% risk score with stage-by-stage breakdown and feature
+                      importance.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <i class="bi bi-cpu" style="font-size: 120px; color: #5E4BFF;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Science Section -->
+
+    <!-- Research Foundation Section (Doctors) -->
+    <section id="research" class="doctors section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Research Foundation</h2>
+        <p>MirAI's methodology is grounded in decades of pioneering Alzheimer's research.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="team-member d-flex flex-column align-items-center text-center">
+              <div class="member-info">
+                <h4>Marshal Folstein</h4>
+                <span>MMSE Developer</span>
+                <p>Developed the Mini-Mental State Examination (MMSE), the most widely used cognitive assessment.
+                  <strong>MirAI does NOT use MMSE as input</strong>—we treat it as a diagnostic tool (not a screening
+                  tool) to prevent data leakage and ensure true early detection.</p>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="team-member d-flex flex-column align-items-center text-center">
+              <div class="member-info">
+                <h4>Allen D. Roses</h4>
+                <span>APOE ε4 Pioneer</span>
+                <p>First demonstrated the association between APOE ε4 and late-onset Alzheimer's Disease, establishing
+                  it as the strongest genetic risk factor for sporadic AD.</p>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="team-member d-flex flex-column align-items-center text-center">
+              <div class="member-info">
+                <h4>Oskar Hansson</h4>
+                <span>pTau-217 Researcher</span>
+                <p>Led pivotal studies establishing plasma pTau-217 as one of the most accurate blood-based biomarkers
+                  for detecting Alzheimer's pathology.</p>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Research Section -->
+
+    <!-- Faq Section -->
+    <section id="faq" class="faq section light-background">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Frequently Asked Questions</h2>
+        <p>Common questions about MirAI's early detection approach.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row justify-content-center">
+
+          <div class="col-lg-10" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="faq-container">
+
+              <div class="faq-item faq-active">
+                <h3>Is MirAI a diagnostic tool?</h3>
+                <div class="faq-content">
+                  <p><strong>No.</strong> MirAI is a <em>screening</em> tool, not a diagnostic. It identifies
+                    individuals at elevated risk who should then undergo formal clinical evaluation. A positive result
+                    does NOT mean you have Alzheimer's—it means further assessment is recommended.</p>
+                </div>
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </div><!-- End Faq item-->
+
+              <div class="faq-item">
+                <h3>Why don't you use MMSE or CDR scores?</h3>
+                <div class="faq-content">
+                  <p>MMSE and CDR are <em>diagnostic</em> instruments designed to assess existing cognitive impairment.
+                    Using them in a screening model creates "label leakage"—the model would essentially be predicting
+                    the diagnosis from diagnosis-adjacent features, defeating the purpose of early detection.</p>
+                </div>
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </div><!-- End Faq item-->
+
+              <div class="faq-item">
+                <h3>How accurate is the biomarker stage?</h3>
+                <div class="faq-content">
+                  <p>Stage 3 achieves an AUC of approximately 0.93 on held-out test data. However, accuracy alone
+                    doesn't tell the full story—MirAI also provides uncertainty estimates and stage-by-stage
+                    explainability so clinicians can make informed decisions.</p>
+                </div>
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </div><!-- End Faq item-->
+
+              <div class="faq-item">
+                <h3>What data does MirAI use?</h3>
+                <div class="faq-content">
+                  <p>MirAI was trained on the Alzheimer's Disease Neuroimaging Initiative (ADNI) dataset, which includes
+                    clinical assessments, genetic markers (APOE), and plasma biomarker data from over 2,400
+                    participants.</p>
+                </div>
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </div><!-- End Faq item-->
+
+              <div class="faq-item">
+                <h3>Is my data stored or shared?</h3>
+                <div class="faq-content">
+                  <p>In this demo version, all processing happens locally in your browser or on a local server. No
+                    personal health data is transmitted to external servers. For production deployment, all data
+                    handling would comply with HIPAA/GDPR requirements.</p>
+                </div>
+                <i class="faq-toggle bi bi-chevron-right"></i>
+              </div><!-- End Faq item-->
+
+            </div>
+
+          </div><!-- End Faq Column-->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Faq Section -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p>Get in touch with the Break&Build team.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4 justify-content-center">
+
+          <div class="col-lg-4">
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+              <i class="bi bi-people flex-shrink-0"></i>
+              <div>
+                <h3>Team</h3>
+                <p>Break&Build</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+              <i class="bi bi-telephone flex-shrink-0"></i>
+              <div>
+                <h3>Call Us</h3>
+                <p>+91 9531975283</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
+              <i class="bi bi-github flex-shrink-0"></i>
+              <div>
+                <h3>GitHub</h3>
+                <p><a
+                    href="https://github.com/Varghese778/codeversity-MirAI">github.com/Varghese778/codeversity-MirAI</a>
+                </p>
+              </div>
+            </div><!-- End Info Item -->
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /Contact Section -->
+
+  </main>
+
+  <footer id="footer" class="footer light-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4 justify-content-center text-center">
+        <div class="col-lg-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center justify-content-center">
+            <span class="sitename mirai-logo" style="font-size: 24px;">MirAI</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p><strong>Team:</strong> Break&Build</p>
+            <p><strong>Phone:</strong> +91 9531975283</p>
+          </div>
+          <div class="social-links d-flex justify-content-center mt-4">
+            <a href="https://github.com/Varghese778/codeversity-MirAI"><i class="bi bi-github"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>2026</span> <strong class="px-1 sitename">MirAI</strong> by Team Break&Build. All Rights Reserved.</p>
+      <div class="credits">
+        Built for early Alzheimer's detection | Powered by ADNI Data
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>

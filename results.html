@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>MirAI - Risk Report</title>
+    <meta name="description" content="Your MirAI Alzheimer's risk assessment results.">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f9f7 100%);
+            min-height: 100vh;
+        }
+
+        .mirai-logo {
+            font-weight: 800;
+            font-size: 28px;
+            background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .results-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        /* Risk Gauge */
+        .gauge-container {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            margin: 0 auto 30px;
+        }
+
+        .gauge-bg {
+            position: absolute;
+            width: 280px;
+            height: 140px;
+            border-radius: 280px 280px 0 0;
+            background: linear-gradient(90deg, #00C9A7 0%, #FFD93D 50%, #FF6B6B 100%);
+            overflow: hidden;
+        }
+
+        .gauge-bg::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: white;
+            border-radius: 200px 200px 0 0;
+            bottom: 0;
+            left: 40px;
+        }
+
+        .gauge-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 100px;
+            background: #1E293B;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: rotate(-90deg);
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
+        }
+
+        .gauge-needle::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            width: 20px;
+            height: 20px;
+            background: #1E293B;
+            border-radius: 50%;
+        }
+
+        .gauge-value {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: 800;
+            z-index: 20;
+        }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Risk Level Badge */
+        .risk-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .risk-badge.low {
+            background: rgba(0, 201, 167, 0.15);
+            color: #00C9A7;
+        }
+
+        .risk-badge.elevated {
+            background: rgba(255, 149, 0, 0.15);
+            color: #FF9500;
+        }
+
+        .risk-badge.high {
+            background: rgba(255, 107, 107, 0.15);
+            color: #FF6B6B;
+        }
+
+        /* Pipeline Visualization */
+        .pipeline-result {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .pipeline-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .pipeline-icon.clinical {
+            background: #5E4BFF;
+        }
+
+        .pipeline-icon.genetic {
+            background: #FF9500;
+        }
+
+        .pipeline-icon.biomarker {
+            background: #00C9A7;
+        }
+
+        .pipeline-info h5 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .pipeline-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .pipeline-status {
+            margin-left: auto;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-low {
+            background: rgba(0, 201, 167, 0.15);
+            color: #00C9A7;
+        }
+
+        .status-elevated {
+            background: rgba(255, 149, 0, 0.15);
+            color: #FF9500;
+        }
+
+        .status-high {
+            background: rgba(255, 107, 107, 0.15);
+            color: #FF6B6B;
+        }
+
+        /* Explainability Panel */
+        .explain-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .explain-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(94, 75, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5E4BFF;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .explain-text h6 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .explain-text p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .btn-mirai {
+            background: linear-gradient(135deg, #5E4BFF 0%, #00C9A7 100%);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-mirai:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(94, 75, 255, 0.3);
+            color: white;
+        }
+
+        .disclaimer {
+            background: rgba(255, 149, 0, 0.1);
+            border-left: 4px solid #FF9500;
+            padding: 16px 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 24px;
+        }
+
+        .disclaimer h6 {
+            color: #FF9500;
+            margin-bottom: 8px;
+        }
+
+        .disclaimer p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="results-container">
+
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <a href="index.html" class="mirai-logo text-decoration-none">MirAI</a>
+            <p class="text-muted mt-2">Risk Assessment Report</p>
+        </div>
+
+        <!-- Main Risk Score Card -->
+        <div class="results-card text-center" data-aos="fade-up">
+            <h4 class="text-muted mb-4">Your MirAI Risk Score</h4>
+
+            <div class="gauge-container">
+                <div class="gauge-bg"></div>
+                <div class="gauge-needle" id="gaugeNeedle"></div>
+                <div class="gauge-value" id="gaugeValue">--%</div>
+            </div>
+            <div class="gauge-labels" style="max-width: 280px; margin: 0 auto;">
+                <span>Low Risk</span>
+                <span>Elevated</span>
+                <span>High Risk</span>
+            </div>
+
+            <div class="mt-4">
+                <span class="risk-badge" id="riskBadge">Calculating...</span>
+            </div>
+        </div>
+
+        <!-- Pipeline Results -->
+        <div class="results-card" data-aos="fade-up" data-aos-delay="100">
+            <h5 class="mb-4"><i class="bi bi-diagram-3 me-2"></i>3-Stage Pipeline Results</h5>
+
+            <div class="pipeline-result">
+                <div class="pipeline-icon clinical"><i class="bi bi-clipboard-pulse"></i></div>
+                <div class="pipeline-info">
+                    <h5>Stage 1: Clinical Screening</h5>
+                    <p>Memory, function, and demographic factors</p>
+                </div>
+                <span class="pipeline-status" id="stage1Status">--</span>
+            </div>
+
+            <div class="pipeline-result">
+                <div class="pipeline-icon genetic"><i class="bi bi-dna"></i></div>
+                <div class="pipeline-info">
+                    <h5>Stage 2: Genetic Stratification</h5>
+                    <p>APOE ε4 risk allele analysis</p>
+                </div>
+                <span class="pipeline-status" id="stage2Status">--</span>
+            </div>
+
+            <div class="pipeline-result">
+                <div class="pipeline-icon biomarker"><i class="bi bi-droplet-half"></i></div>
+                <div class="pipeline-info">
+                    <h5>Stage 3: Biomarker Confirmation</h5>
+                    <p>Plasma pTau-217, Aβ42, NfL analysis</p>
+                </div>
+                <span class="pipeline-status" id="stage3Status">--</span>
+            </div>
+        </div>
+
+        <!-- Explainability Panel -->
+        <div class="results-card" data-aos="fade-up" data-aos-delay="200">
+            <h5 class="mb-4"><i class="bi bi-lightbulb me-2"></i>Key Risk Factors</h5>
+
+            <div class="explain-item">
+                <div class="explain-icon"><i class="bi bi-clipboard-check"></i></div>
+                <div class="explain-text">
+                    <h6 id="factor1Title">Primary Clinical Factor</h6>
+                    <p id="factor1Desc">Loading...</p>
+                </div>
+            </div>
+
+            <div class="explain-item">
+                <div class="explain-icon"><i class="bi bi-person-badge"></i></div>
+                <div class="explain-text">
+                    <h6 id="factor2Title">Genetic Profile</h6>
+                    <p id="factor2Desc">Loading...</p>
+                </div>
+            </div>
+
+            <div class="explain-item">
+                <div class="explain-icon"><i class="bi bi-droplet"></i></div>
+                <div class="explain-text">
+                    <h6 id="factor3Title">Biomarker Signal</h6>
+                    <p id="factor3Desc">Loading...</p>
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <h6><i class="bi bi-exclamation-triangle me-2"></i>Important Notice</h6>
+                <p>This screening result is <strong>not a diagnosis</strong>. It indicates relative risk based on the
+                    provided inputs. Please consult a qualified healthcare provider for proper clinical evaluation and
+                    next steps.</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="text-center" data-aos="fade-up" data-aos-delay="300">
+            <a href="assessment.html" class="btn btn-mirai me-3">
+                <i class="bi bi-arrow-repeat me-2"></i>New Assessment
+            </a>
+            <a href="index.html" class="btn btn-outline-secondary">
+                <i class="bi bi-house me-2"></i>Back to Home
+            </a>
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted"><i class="bi bi-shield-check me-1"></i> Your data was processed locally and has
+                not been stored.</small>
+        </div>
+
+    </div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init();
+
+        // Retrieve assessment data
+        const data = JSON.parse(localStorage.getItem('miraiAssessment')) || {};
+
+        // Simulate risk calculation (in real app, this would call the backend)
+        function calculateMockRisk(data) {
+            // Simple heuristic for demo purposes
+            let score = 15; // Base low risk
+
+            // Age factor
+            const age = parseInt(data.age) || 65;
+            if (age > 75) score += 20;
+            else if (age > 65) score += 10;
+
+            // FAQ factor (0-30)
+            const faq = parseInt(data.faq) || 0;
+            score += faq * 1.5;
+
+            // Memory self-rating (1-4)
+            const ecog = parseFloat(data.ecogMem) || 1;
+            score += (ecog - 1) * 10;
+
+            // Genotype factor
+            const genotype = data.genotype || '';
+            if (genotype === '4/4') score += 25;
+            else if (genotype === '3/4' || genotype === '2/4') score += 15;
+
+            // Biomarker factors
+            const ptau = parseFloat(data.ptau217) || 0;
+            if (ptau > 0.6) score += 20;
+            else if (ptau > 0.3) score += 10;
+
+            // Cap at 100
+            return Math.min(Math.round(score), 100);
+        }
+
+        function getStageRisk(score, stage) {
+            if (stage === 1) {
+                if (score < 30) return { status: 'Low Risk', class: 'status-low' };
+                if (score < 60) return { status: 'Elevated', class: 'status-elevated' };
+                return { status: 'High Risk', class: 'status-high' };
+            }
+            if (stage === 2) {
+                const genotype = data.genotype || '';
+                if (genotype.includes('4')) return { status: 'Elevated', class: 'status-elevated' };
+                if (!genotype) return { status: 'Not Tested', class: 'status-low' };
+                return { status: 'Low Risk', class: 'status-low' };
+            }
+            if (stage === 3) {
+                const ptau = parseFloat(data.ptau217) || 0;
+                if (!ptau) return { status: 'Not Tested', class: 'status-low' };
+                if (ptau > 0.6) return { status: 'Elevated', class: 'status-elevated' };
+                return { status: 'Normal', class: 'status-low' };
+            }
+        }
+
+        function getRiskCategory(score) {
+            if (score < 30) return { label: 'Low Risk', class: 'low' };
+            if (score < 60) return { label: 'Elevated Risk', class: 'elevated' };
+            return { label: 'High Risk', class: 'high' };
+        }
+
+        // Calculate and display results
+        const riskScore = calculateMockRisk(data);
+        const riskCategory = getRiskCategory(riskScore);
+
+        // Animate gauge
+        setTimeout(() => {
+            const needleRotation = -90 + (riskScore / 100) * 180;
+            document.getElementById('gaugeNeedle').style.transform = `rotate(${needleRotation}deg)`;
+            document.getElementById('gaugeValue').textContent = `${riskScore}%`;
+            document.getElementById('gaugeValue').style.color = riskCategory.class === 'low' ? '#00C9A7' :
+                riskCategory.class === 'elevated' ? '#FF9500' : '#FF6B6B';
+
+            document.getElementById('riskBadge').textContent = riskCategory.label;
+            document.getElementById('riskBadge').className = `risk-badge ${riskCategory.class}`;
+        }, 500);
+
+        // Stage results
+        setTimeout(() => {
+            const s1 = getStageRisk(riskScore, 1);
+            const s2 = getStageRisk(riskScore, 2);
+            const s3 = getStageRisk(riskScore, 3);
+
+            document.getElementById('stage1Status').textContent = s1.status;
+            document.getElementById('stage1Status').className = `pipeline-status ${s1.class}`;
+
+            document.getElementById('stage2Status').textContent = s2.status;
+            document.getElementById('stage2Status').className = `pipeline-status ${s2.class}`;
+
+            document.getElementById('stage3Status').textContent = s3.status;
+            document.getElementById('stage3Status').className = `pipeline-status ${s3.class}`;
+        }, 800);
+
+        // Explainability
+        setTimeout(() => {
+            // Factor 1: Clinical
+            const faq = parseInt(data.faq) || 0;
+            if (faq >= 10) {
+                document.getElementById('factor1Title').textContent = 'Functional Impairment Detected';
+                document.getElementById('factor1Desc').textContent = `FAQ score of ${faq} indicates difficulty with daily activities.`;
+            } else {
+                document.getElementById('factor1Title').textContent = 'Functional Status Normal';
+                document.getElementById('factor1Desc').textContent = 'No significant impairment in daily activities reported.';
+            }
+
+            // Factor 2: Genetic
+            const genotype = data.genotype || '';
+            if (genotype === '4/4') {
+                document.getElementById('factor2Title').textContent = 'APOE4 Homozygous (ε4/ε4)';
+                document.getElementById('factor2Desc').textContent = 'Two copies of the ε4 allele significantly increase lifetime risk.';
+            } else if (genotype.includes('4')) {
+                document.getElementById('factor2Title').textContent = 'APOE4 Carrier';
+                document.getElementById('factor2Desc').textContent = 'One copy of the ε4 allele moderately increases risk.';
+            } else if (genotype) {
+                document.getElementById('factor2Title').textContent = 'No APOE4 Alleles';
+                document.getElementById('factor2Desc').textContent = 'Your genotype does not carry the high-risk ε4 variant.';
+            } else {
+                document.getElementById('factor2Title').textContent = 'Genetic Data Not Provided';
+                document.getElementById('factor2Desc').textContent = 'APOE genotype was not included in this assessment.';
+            }
+
+            // Factor 3: Biomarker
+            const ptau = parseFloat(data.ptau217) || 0;
+            if (ptau > 0.6) {
+                document.getElementById('factor3Title').textContent = 'Elevated pTau-217';
+                document.getElementById('factor3Desc').textContent = `pTau-217 level of ${ptau} pg/mL suggests possible tau pathology.`;
+            } else if (ptau > 0) {
+                document.getElementById('factor3Title').textContent = 'pTau-217 Within Normal Range';
+                document.getElementById('factor3Desc').textContent = 'Blood biomarker levels do not indicate elevated tau.';
+            } else {
+                document.getElementById('factor3Title').textContent = 'Biomarker Data Not Provided';
+                document.getElementById('factor3Desc').textContent = 'Plasma biomarkers were not included in this assessment.';
+            }
+        }, 1000);
+    </script>
+
+</body>
+
+</html>
